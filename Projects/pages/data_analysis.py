@@ -24,12 +24,12 @@ def data_analysis():
     st.subheader("Load and Prepare the Dataset")
 
     # Load dataset
-    file_path = 'data/marketing_campaign.xls'  # Relative path within the project
+    file_path = './data/marketing_campaign.xls'  # Relative path within the project
 
     # Read the file
     data = pd.read_csv(file_path, sep = "\t")
 
-    st.image('images/Dataset explanation.png')  # Display image from the 'images' folder
+    st.image('./images/Dataset explanation.png')  # Display image from the 'images' folder
 
     # Add an expander to show the raw data
     with st.expander("Show Raw Data"):
