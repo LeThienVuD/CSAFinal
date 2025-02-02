@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import datetime
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import seaborn as sns
@@ -8,9 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
-from mpl_toolkits.mplot3d import Axes3D
 from sklearn.cluster import AgglomerativeClustering
-from matplotlib.colors import ListedColormap
 import warnings
 import sys
 import streamlit as st
@@ -27,7 +24,10 @@ def data_analysis():
     st.subheader("Load and Prepare the Dataset")
 
     # Load dataset
-    data = pd.read_csv(r'C:\Users\DELL\Downloads\marketing_campaign.xls', sep="\t")
+    file_path = 'data/marketing_campaign.xls'  # Relative path within the project
+
+    # Read the file
+    data = pd.read_csv(file_path, sep = "\t")
 
     st.image('images/Dataset explanation.png')  # Display image from the 'images' folder
 
