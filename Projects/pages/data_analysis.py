@@ -12,6 +12,7 @@ import warnings
 import sys
 import streamlit as st
 import time
+import os
 
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
@@ -24,7 +25,11 @@ def data_analysis():
     st.subheader("Load and Prepare the Dataset")
 
     # Load dataset
-    file_path = './data/marketing_campaign.csv'  # Relative path within the project
+    dir = os.path.abspath(os.curdir)
+    st.write(dir)
+
+    file_path = os.path.join(dir, "./data/marketing_campaign.csv")  # Relative path within the project
+    st.write(file_path)
 
     # Read the file
     data = pd.read_csv(file_path, sep = ",")
