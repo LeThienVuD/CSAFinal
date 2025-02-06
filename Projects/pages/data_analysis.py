@@ -28,7 +28,7 @@ def data_analysis():
     dir = os.path.abspath(os.curdir)
     st.write(dir)
 
-    file_path = os.path.join(dir, "./data/marketing_campaign.csv")  # Relative path within the project
+    file_path = os.path.join(dir, "data/marketing_campaign.csv")  # Relative path within the project
     st.write(file_path)
 
     # Read the file
