@@ -24,7 +24,7 @@ def data_analysis():
     st.subheader("Load and Prepare the Dataset")
 
     # Load dataset
-    file_path = './data/marketing_campaign.csv'  # Relative path within the project
+    file_path = '../data/marketing_campaign.csv'  # Relative path within the project
 
     # Read the file
     data = pd.read_csv(file_path, sep = ",")
