@@ -165,9 +165,6 @@ if page == "Homepage":
 elif page == "Data Analysis":
     from pages.data_analysis import data_analysis
     data_analysis()  # Call the Data_analysis function
-elif page == "Insights & Conclusion":
-    from pages.conclusion import insights_and_conclusion
-    insights_and_conclusion()  # Call the Data_analysis function
 elif page == "Canvas":
     from pages.canvas import canvas
     canvas()  # Call the canvas function
