@@ -6,16 +6,16 @@ import json
 import base64
 import time
 import requests
-from streamlit_drawable_canvas import st_canvas # Ensure this import is here
+from streamlit_drawable_canvas import st_canvas # Đảm bảo đã import thư viện này
 
-# --- Helper Functions (as defined previously) ---
-# Paste add_circle_to_json_data and get_gaze_coordinates_from_llm here
-# (No changes needed to these functions themselves)
+# --- Hàm hỗ trợ (đã định nghĩa trước đó) ---
+# Dán hàm add_circle_to_json_data và get_gaze_coordinates_from_llm vào đây
+# (Không cần thay đổi các hàm này)
 
 def add_circle_to_json_data(current_json_data, x, y, radius, color, stroke_width):
     """
-    Adds a circle object to the canvas JSON data.
-    `x` and `y` are center coordinates. Fabric.js uses top-left for object positioning.
+    Thêm một đối tượng hình tròn vào dữ liệu JSON của canvas.
+    `x` và `y` là tọa độ tâm. Fabric.js sử dụng tọa độ góc trên bên trái để định vị đối tượng.
     """
     if current_json_data is None or not current_json_data:
         current_json_data = {"objects": []}
@@ -49,21 +49,21 @@ def get_gaze_coordinates_from_llm(image_bytes, canvas_width, canvas_height):
     base64_image_data = base64.b64encode(image_bytes).decode('utf-8')
 
     prompt = (
-        f"Analyze the provided image of a person. Identify the approximate center of their eye gaze on the image. "
-        f"Respond with a single JSON object containing 'gaze_x' and 'gaze_y' as coordinates within the image, "
-        f"assuming the top-left is (0,0) and the bottom-right is ({canvas_width},{canvas_height}). "
-        "For example: {\"gaze_x\": 350, \"gaze_y\": 250}. Be precise and only output the JSON."
+        f"Phân tích hình ảnh người được cung cấp. Xác định tâm ước tính của ánh mắt trên hình ảnh. "
+        f"Phản hồi bằng một đối tượng JSON duy nhất chứa 'gaze_x' và 'gaze_y' làm tọa độ trong hình ảnh, "
+        f"giả sử góc trên bên trái là (0,0) và góc dưới bên phải là ({canvas_width},{canvas_height}). "
+        "Ví dụ: {\"gaze_x\": 350, \"gaze_y\": 250}. Hãy chính xác và chỉ xuất ra JSON."
     )
     use_mock_response = False
     apiKey = ""
     try:
         api_key_local = st.secrets.get("GOOGLE_API_KEY", "")
         if not api_key_local:
-            raise ValueError("No API key found in st.secrets. Mocking response.")
+            raise ValueError("Không tìm thấy khóa API trong st.secrets. Đang mô phỏng phản hồi.")
         apiKey = api_key_local
     except Exception as e:
         use_mock_response = True
-        st.warning(f"Note: {e}. Using mocked LLM response for gaze detection.")
+        st.warning(f"Lưu ý: {e}. Đang sử dụng phản hồi LLM mô phỏng để phát hiện ánh mắt.")
 
     if use_mock_response:
         mock_gaze_x = int(canvas_width / 2 + (st.session_state.get('mock_gaze_offset_x', 0) % 100 - 50))
@@ -99,26 +99,26 @@ def get_gaze_coordinates_from_llm(image_bytes, canvas_width, canvas_height):
                 gaze_coords = json.loads(llm_gaze_text)
                 return gaze_coords
             except (KeyError, IndexError) as parse_error:
-                st.error(f"❌ Unexpected Gemini response format: {parse_error}")
+                st.error(f"❌ Định dạng phản hồi Gemini không mong muốn: {parse_error}")
             except json.JSONDecodeError as json_error:
-                st.error(f"❌ JSON decode error: {json_error}\nRaw text: {llm_gaze_text}")
+                st.error(f"❌ Lỗi giải mã JSON: {json_error}\nVăn bản thô: {llm_gaze_text}")
             except Exception as general_error:
-                st.error(f"❌ Unexpected error: {general_error}")
+                st.error(f"❌ Lỗi không mong muốn: {general_error}")
             return {"gaze_x": -1, "gaze_y": -1}
         except requests.exceptions.RequestException as req_e:
-            st.error(f"Error calling LLM API: {req_e}. Please check your API key and network connection.")
+            st.error(f"Lỗi khi gọi API LLM: {req_e}. Vui lòng kiểm tra khóa API và kết nối mạng của bạn.")
             return {"gaze_x": -1, "gaze_y": -1}
         except Exception as api_e:
-            st.error(f"An unexpected error occurred during API call: {api_e}")
+            st.error(f"Đã xảy ra lỗi không mong muốn trong quá trình gọi API: {api_e}")
             return {"gaze_x": -1, "gaze_y": -1}
 
 
 def canvas():
-    # --- Streamlit Page Configuration ---
-    # REMOVED: st.set_page_config(layout="wide", page_title="Simple Drawing App", page_icon=":pencil2:")
-    # This should be in your main app.py, if you want a global page config.
+    # --- Cấu hình Trang Streamlit ---
+    # ĐÃ XÓA: st.set_page_config(layout="wide", page_title="Simple Drawing App", page_icon=":pencil2:")
+    # Điều này nên nằm trong tệp app.py chính của bạn, nếu bạn muốn cấu hình trang toàn cầu.
 
-    # --- Session State Initialization ---
+    # --- Khởi tạo Trạng thái Phiên ---
     if 'canvas_key' not in st.session_state:
         st.session_state.canvas_key = str(uuid.uuid4())
     if 'drawing_history' not in st.session_state:
@@ -134,15 +134,15 @@ def canvas():
     if 'last_captured_image_for_display' not in st.session_state:
         st.session_state.last_captured_image_for_display = None
 
-    # Initialize selectbox state for drawing mode
+    # Khởi tạo trạng thái selectbox cho chế độ vẽ
     if 'drawing_mode_value' not in st.session_state:
-        st.session_state.drawing_mode_value = "freedraw" # Set a default starting value
+        st.session_state.drawing_mode_value = "freedraw" # Đặt giá trị mặc định ban đầu
 
 
-    st.title("Interactive Drawing Canvas with AI Gaze (Simulated)")
+    st.title("Canvas Vẽ Tương tác với Phát hiện Ánh mắt AI (Mô phỏng)")
 
-    # --- Sidebar Configuration ---
-    st.sidebar.header("Canvas Configuration")
+    # --- Cấu hình Thanh bên (Sidebar) ---
+    st.sidebar.header("Cấu hình Canvas")
 
     drawing_mode_options = ("freedraw", "line", "rect", "circle", "transform", "polygon", "point")
     selected_index = 0
@@ -153,7 +153,7 @@ def canvas():
         selected_index = 0
 
     drawing_mode = st.sidebar.selectbox(
-        "Drawing tool:",
+        "Công cụ vẽ:",
         drawing_mode_options,
         index=selected_index,
         key="drawing_tool_selectbox"
@@ -162,22 +162,22 @@ def canvas():
     if drawing_mode != st.session_state.drawing_mode_value:
         st.session_state.drawing_mode_value = drawing_mode
 
-    stroke_width = st.sidebar.slider("Stroke width:", 1, 25, 3)
+    stroke_width = st.sidebar.slider("Độ dày nét vẽ:", 1, 25, 3)
 
     point_display_radius = 0
     if drawing_mode == "point":
-        point_display_radius = st.sidebar.slider("Point display radius:", 1, 25, 3)
-    stroke_color = st.sidebar.color_picker("Stroke color hex:", "#000000")
-    bg_color = st.sidebar.color_picker("Background color hex:", "#FFFFFF")
+        point_display_radius = st.sidebar.slider("Bán kính hiển thị điểm:", 1, 25, 3)
+    stroke_color = st.sidebar.color_picker("Màu nét vẽ (hex):", "#000000")
+    bg_color = st.sidebar.color_picker("Màu nền (hex):", "#FFFFFF")
 
-    bg_image_file = st.sidebar.file_uploader("Upload background image:", type=["png", "jpg", "jpeg"])
+    bg_image_file = st.sidebar.file_uploader("Tải lên ảnh nền:", type=["png", "jpg", "jpeg"])
     
     bg_image = None
     if bg_image_file:
         try:
             bg_image = Image.open(bg_image_file)
         except Exception as e:
-            st.sidebar.error(f"Error loading image: {e}. Please try another file.")
+            st.sidebar.error(f"Lỗi khi tải ảnh: {e}. Vui lòng thử tệp khác.")
 
     initial_canvas_drawing_data = {"objects": []}
     if st.session_state.history_index >= 0 and st.session_state.history_index < len(st.session_state.drawing_history):
@@ -229,7 +229,7 @@ def canvas():
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        if st.button("Clear Canvas", use_container_width=True, key="clear_canvas_button"):
+        if st.button("Xóa Canvas", use_container_width=True, key="clear_canvas_button"):
             st.session_state.canvas_key = str(uuid.uuid4())
             st.session_state.drawing_history = []
             st.session_state.history_index = -1
@@ -238,13 +238,13 @@ def canvas():
             st.session_state.drawing_mode_value = "freedraw"
             st.rerun()
     with col2:
-        if st.button("Undo", use_container_width=True, disabled=undo_disabled, key="undo_button"):
+        if st.button("Hoàn tác", use_container_width=True, disabled=undo_disabled, key="undo_button"):
             if st.session_state.history_index > 0:
                 st.session_state.history_index -= 1
                 st.session_state.action_triggered_rerun = True
                 st.rerun()
     with col3:
-        if st.button("Redo", use_container_width=True, disabled=redo_disabled, key="redo_button"):
+        if st.button("Làm lại", use_container_width=True, disabled=redo_disabled, key="redo_button"):
             if st.session_state.history_index < len(st.session_state.drawing_history) - 1:
                 st.session_state.history_index += 1
                 st.session_state.action_triggered_rerun = True
@@ -256,7 +256,7 @@ def canvas():
             pil_image.save(buf, format="PNG")
             byte_im = buf.getvalue()
             st.download_button(
-                label="Download Image",
+                label="Tải ảnh",
                 data=byte_im,
                 file_name="drawn_image.png",
                 mime="image/png",
@@ -264,23 +264,23 @@ def canvas():
                 key="download_button_active"
             )
         else:
-            st.button("Download Image", disabled=True, use_container_width=True, key="download_button_disabled")
+            st.button("Tải ảnh", disabled=True, use_container_width=True, key="download_button_disabled")
 
     st.markdown("---")
 
-    st.header("AI Gaze Detection (Simulated)")
-    st.write("This feature **simulates** eye gaze detection using an AI model (LLM). For true, precise, real-time gaze detection, specialized computer vision systems are typically required, which are beyond the scope of a basic Streamlit app.")
+    st.header("Phát hiện Ánh mắt AI (Mô phỏng)")
+    st.write("Tính năng này **mô phỏng** việc phát hiện ánh mắt bằng cách sử dụng mô hình AI (LLM). Để phát hiện ánh mắt thực tế, chính xác, theo thời gian thực, thường yêu cầu các hệ thống thị giác máy tính chuyên biệt, điều này vượt quá phạm vi của một ứng dụng Streamlit cơ bản.")
 
-    camera_input = st.camera_input("Capture a frame from your webcam")
+    camera_input = st.camera_input("Chụp một khung hình từ webcam của bạn")
 
     if camera_input:
         st.session_state.captured_image_bytes = camera_input.getvalue()
         st.session_state.last_captured_image_for_display = camera_input
-        st.image(camera_input, caption="Captured Frame", width=300)
+        st.image(camera_input, caption="Khung hình đã chụp", width=300)
 
-    if st.button("Analyze Gaze from Captured Frame", disabled=(st.session_state.captured_image_bytes is None)):
+    if st.button("Phân tích Ánh mắt từ Khung hình đã chụp", disabled=(st.session_state.captured_image_bytes is None)):
         if st.session_state.captured_image_bytes:
-            with st.spinner("Analyzing gaze..."):
+            with st.spinner("Đang phân tích ánh mắt..."):
                 gaze_coords = get_gaze_coordinates_from_llm(
                     st.session_state.captured_image_bytes,
                     CANVAS_WIDTH, CANVAS_HEIGHT
@@ -289,7 +289,7 @@ def canvas():
                 gaze_y = int(gaze_coords.get('gaze_y', -1))
 
                 if gaze_x != -1 and gaze_y != -1:
-                    st.success(f"AI suggests gaze point at: ({gaze_x}, {gaze_y})")
+                    st.success(f"AI gợi ý điểm nhìn là: ({gaze_x}, {gaze_y})")
 
                     current_state_for_drawing = initial_canvas_drawing_data
                     
@@ -308,9 +308,9 @@ def canvas():
                     st.session_state.action_triggered_rerun = True
                     st.rerun()
                 else:
-                    st.error("AI could not determine gaze coordinates. Please try again.")
+                    st.error("AI không thể xác định tọa độ ánh mắt. Vui lòng thử lại.")
         else:
-            st.warning("Please capture an image first using the camera input.")
+            st.warning("Vui lòng chụp ảnh trước bằng cách sử dụng đầu vào camera.")
 
     if st.session_state.last_captured_image_for_display:
-        st.image(st.session_state.last_captured_image_for_display, caption="Last Captured Frame for Analysis", width=300)
+        st.image(st.session_state.last_captured_image_for_display, caption="Khung hình cuối cùng đã chụp để phân tích", width=300)
