@@ -47,4 +47,4 @@ def homepage():
 
     st.markdown("___")
     st.markdown("**Vũ Lê Đức Thiện - CSA08**")
-    st.markdown("**Version: 1.0**")
+    st.markdown("**Version: 1.5**")
