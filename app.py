@@ -156,7 +156,7 @@ no_sidebar_style = """
 st.markdown(no_sidebar_style, unsafe_allow_html=True)
 
 # Sidebar Navigation
-page = st.sidebar.radio("Go to", ["Homepage", "Data Analysis", "Insights & Conclusion", "Canvas"])
+page = st.sidebar.radio("Go to", ["Homepage", "Data Analysis", "Canvas"])
 
 # Conditionally import and render the pages based on the sidebar selection
 if page == "Homepage":
